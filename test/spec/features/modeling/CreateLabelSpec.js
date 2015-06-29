@@ -8,7 +8,7 @@ var TestHelper = require('../../../TestHelper');
 var modelingModule = require('../../../../lib/features/modeling');
 
 
-describe('features/modeling - create label', function() {
+describe.only('features/modeling - create label', function() {
 
 
   beforeEach(bootstrapDiagram({ modules: [ modelingModule ] }));
@@ -72,7 +72,7 @@ describe('features/modeling - create label', function() {
 
       // when
       // label added
-
+      console.log(childShape);
       // then
       expect(newLabel).to.be.defined;
       expect(newLabel.parent).to.equal(parentShape);
