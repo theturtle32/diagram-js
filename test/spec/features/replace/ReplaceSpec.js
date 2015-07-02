@@ -169,6 +169,24 @@ describe('features/Replace', function() {
       // then
       expect(replacedShape.incoming[0]).to.be.defined;
     }));
+
+
+    it('should adopt children', inject(function(elementFactory, replace, elementRegistry) {
+
+      // given
+      var replacement = {
+        id: 'replacement',
+        width: 300,
+        height: 300
+      };
+
+      // when
+      var replacedShape = replace.replaceElement(parentShape, replacement);
+
+      // then
+      expect(replacedShape.children[0]).not.to.be.undefined;
+
+    }));
   });
 
 
