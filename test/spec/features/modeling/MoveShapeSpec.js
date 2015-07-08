@@ -11,6 +11,7 @@ function containment(element) {
   return pick(element, [ 'x', 'y', 'parent' ]);
 }
 
+
 describe('features/modeling - move shape', function() {
 
 
@@ -317,7 +318,7 @@ describe('features/modeling - move shape', function() {
   });
 
 
-  describe('attached shapes', function () {
+  describe('attachments', function () {
 
     var host;
 
@@ -349,29 +350,9 @@ describe('features/modeling - move shape', function() {
       canvas.addShape(attacher2, rootShape);
     }));
 
-    it('should detach shape from host', inject(function(modeling) {
-      // when
-      modeling.moveShapes([ attacher ], { x: 50, y: 50 }, rootShape);
 
-      // then
-      expect(attacher.host).to.be.null;
-      expect(parentShape.attachers).to.not.include(attacher);
-    }));
+    it('should attach', inject(function(modeling) {
 
-
-    it('should reattach shape to original host on undo', inject(function(modeling, commandStack) {
-      // when
-      modeling.moveShapes([ attacher ], { x: 50, y: 50 }, rootShape);
-
-      commandStack.undo();
-
-      // then
-      expect(attacher.host).to.equal(parentShape);
-      expect(parentShape.attachers).to.include(attacher);
-    }));
-
-
-    it('should attach shape', inject(function(modeling) {
       // when
       modeling.moveShapes([ attacher2 ], { x: -50, y: 0 }, parentShape, true);
 
@@ -381,21 +362,47 @@ describe('features/modeling - move shape', function() {
     }));
 
 
-    it('should detach shape on undo', inject(function(modeling, commandStack) {
+    it('should detach from host', inject(function(modeling) {
+
+      // when
+      modeling.moveShapes([ attacher ], { x: 50, y: 50 }, rootShape, false);
+
+      // then
+      expect(attacher.host).not.to.exist;
+      expect(parentShape.attachers).not.to.include(attacher);
+    }));
+
+
+    it('should reattach to original host on undo', inject(function(modeling, commandStack) {
+
+      // when
+      modeling.moveShapes([ attacher ], { x: 50, y: 50 }, rootShape, false);
+
+      commandStack.undo();
+
+      // then
+      expect(attacher.host).to.equal(parentShape);
+      expect(parentShape.attachers).to.include(attacher);
+    }));
+
+
+    it('should detach on undo', inject(function(modeling, commandStack) {
+
       // when
       modeling.moveShapes([ attacher2 ], { x: -50, y: 0 }, parentShape, true);
 
       commandStack.undo();
 
       // then
-      expect(attacher2.host).to.be.null;
-      expect(parentShape.attachers).to.not.include(attacher2);
+      expect(attacher2.host).not.to.exist;
+      expect(parentShape.attachers).not.to.include(attacher2);
     }));
 
 
-    it('should reattach shape to initial host when detached', inject(function(modeling) {
+    it('should reattach to initial host when detached', inject(function(modeling) {
+
       // when
-      modeling.moveShapes([ attacher ], { x: 50, y: 50 }, rootShape);
+      modeling.moveShapes([ attacher ], { x: 50, y: 50 }, rootShape, false);
 
       modeling.moveShapes([ attacher ], { x: -50, y: -50 }, parentShape, true);
 
@@ -405,7 +412,8 @@ describe('features/modeling - move shape', function() {
     }));
 
 
-    it('should reattach shape to another host', inject(function(modeling) {
+    it('should reattach to another host', inject(function(modeling) {
+
       // when
       modeling.moveShapes([ attacher ], { x: 300, y: 0 }, host, true);
 
@@ -415,9 +423,10 @@ describe('features/modeling - move shape', function() {
     }));
 
 
-    it('should detach shape on reattachment undo', inject(function(modeling, commandStack) {
+    it('should detach on reattachment undo', inject(function(modeling, commandStack) {
+
       // when
-      modeling.moveShapes([ attacher ], { x: 50, y: 50 }, rootShape);
+      modeling.moveShapes([ attacher ], { x: 50, y: 50 }, rootShape, false);
 
       modeling.moveShapes([ attacher ], { x: -50, y: -50 }, parentShape, true);
 
@@ -425,7 +434,7 @@ describe('features/modeling - move shape', function() {
 
       // then
       expect(attacher.host).to.not.exist;
-      expect(parentShape.attachers).to.not.include(attacher);
+      expect(parentShape.attachers).not.to.include(attacher);
     }));
 
   });
