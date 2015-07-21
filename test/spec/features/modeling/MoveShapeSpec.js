@@ -18,7 +18,7 @@ describe('features/modeling - move shape', function() {
   beforeEach(bootstrapDiagram({ modules: [ modelingModule ] }));
 
 
-  var rootShape, parentShape, parentShape2, childShape, childShape2, connection, attacher, attacher2;
+  var rootShape, parentShape, parentShape2, childShape, childShape2, connection;
 
   beforeEach(inject(function(elementFactory, canvas) {
 
@@ -315,128 +315,6 @@ describe('features/modeling - move shape', function() {
       expect(childShape.parent).to.equal(parentShape2);
       expect(childShape2.parent).to.equal(parentShape2);
     }));
-  });
-
-
-  describe('attachments', function () {
-
-    var host;
-
-    beforeEach(inject(function(canvas, elementFactory, modeling) {
-
-      host = elementFactory.createShape({
-        id:'host',
-        x: 700, y: 100,
-        width: 100, height: 100
-      });
-
-      canvas.addShape(host, rootShape);
-
-      attacher = elementFactory.createShape({
-        id: 'attacher',
-        x: 400, y: 110,
-        width: 50, height: 50
-      });
-
-      modeling.createShape(attacher, { x: 400, y: 110 }, parentShape, 'attach');
-
-
-      attacher2 = elementFactory.createShape({
-        id: 'attacher2',
-        x: 425, y: 375,
-        width: 50, height: 50
-      });
-
-      canvas.addShape(attacher2, rootShape);
-    }));
-
-
-    it('should attach', inject(function(modeling) {
-
-      // when
-      modeling.moveShapes([ attacher2 ], { x: -50, y: 0 }, parentShape, true);
-
-      // then
-      expect(attacher2.host).to.equal(parentShape);
-      expect(parentShape.attachers).to.include(attacher2);
-    }));
-
-
-    it('should detach from host', inject(function(modeling) {
-
-      // when
-      modeling.moveShapes([ attacher ], { x: 50, y: 50 }, rootShape, false);
-
-      // then
-      expect(attacher.host).not.to.exist;
-      expect(parentShape.attachers).not.to.include(attacher);
-    }));
-
-
-    it('should reattach to original host on undo', inject(function(modeling, commandStack) {
-
-      // when
-      modeling.moveShapes([ attacher ], { x: 50, y: 50 }, rootShape, false);
-
-      commandStack.undo();
-
-      // then
-      expect(attacher.host).to.equal(parentShape);
-      expect(parentShape.attachers).to.include(attacher);
-    }));
-
-
-    it('should detach on undo', inject(function(modeling, commandStack) {
-
-      // when
-      modeling.moveShapes([ attacher2 ], { x: -50, y: 0 }, parentShape, true);
-
-      commandStack.undo();
-
-      // then
-      expect(attacher2.host).not.to.exist;
-      expect(parentShape.attachers).not.to.include(attacher2);
-    }));
-
-
-    it('should reattach to initial host when detached', inject(function(modeling) {
-
-      // when
-      modeling.moveShapes([ attacher ], { x: 50, y: 50 }, rootShape, false);
-
-      modeling.moveShapes([ attacher ], { x: -50, y: -50 }, parentShape, true);
-
-      // then
-      expect(attacher.host).to.equal(parentShape);
-      expect(parentShape.attachers).to.include(attacher);
-    }));
-
-
-    it('should reattach to another host', inject(function(modeling) {
-
-      // when
-      modeling.moveShapes([ attacher ], { x: 300, y: 0 }, host, true);
-
-      // then
-      expect(attacher.host).to.equal(host);
-      expect(host.attachers).to.include(attacher);
-    }));
-
-
-    it('should detach on reattachment undo', inject(function(modeling, commandStack) {
-
-      // when
-      modeling.moveShapes([ attacher ], { x: 50, y: 50 }, rootShape, false);
-
-      modeling.moveShapes([ attacher ], { x: -50, y: -50 }, parentShape, true);
-
-      commandStack.undo();
-
-      // then
-      expect(attacher.host).to.not.exist;
-      expect(parentShape.attachers).not.to.include(attacher);
-    }));
-
   });
 
 });
