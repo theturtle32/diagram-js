@@ -350,6 +350,33 @@ describe('features/Replace', function() {
       expect(newShape.attachers).not.to.include(attachedShape2);
     }));
 
+
+    it.only('should adopt children with attachments',
+      inject(function(elementFactory, replace, elementRegistry, canvas) {
+
+      // given
+      attachedShape = elementFactory.createShape({
+        id: 'attachedShape3',
+        x: 140, y: 180, width: 50, height: 50,
+        host: originalShape
+      });
+
+      canvas.addShape(attachedShape);
+
+      var replacement = {
+        id: 'replacement',
+        width: 300,
+        height: 300
+      };
+
+      // when
+      replace.replaceElement(parentShape, replacement);
+
+      // then
+      expect(originalShape.attachers).to.include(attachedShape);
+      expect(attachedShape.host).to.eql(originalShape);
+    }));
+
   });
 
 
